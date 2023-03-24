@@ -19984,72 +19984,15 @@ var $author$project$Main$TimeTrackerMsg = function (a) {
 	return {$: 'TimeTrackerMsg', a: a};
 };
 var $author$project$Main$Todoist = {$: 'Todoist'};
-var $elm$url$Url$addPort = F2(
-	function (maybePort, starter) {
-		if (maybePort.$ === 'Nothing') {
-			return starter;
-		} else {
-			var port_ = maybePort.a;
-			return starter + (':' + $elm$core$String$fromInt(port_));
-		}
-	});
-var $elm$url$Url$addPrefixed = F3(
-	function (prefix, maybeSegment, starter) {
-		if (maybeSegment.$ === 'Nothing') {
-			return starter;
-		} else {
-			var segment = maybeSegment.a;
-			return _Utils_ap(
-				starter,
-				_Utils_ap(prefix, segment));
-		}
-	});
-var $elm$url$Url$toString = function (url) {
-	var http = function () {
-		var _v0 = url.protocol;
-		if (_v0.$ === 'Http') {
-			return 'http://';
-		} else {
-			return 'https://';
-		}
-	}();
-	return A3(
-		$elm$url$Url$addPrefixed,
-		'#',
-		url.fragment,
-		A3(
-			$elm$url$Url$addPrefixed,
-			'?',
-			url.query,
-			_Utils_ap(
-				A2(
-					$elm$url$Url$addPort,
-					url.port_,
-					_Utils_ap(http, url.host)),
-				url.path)));
-};
 var $author$project$Main$bypassFakeFragment = function (url) {
-	var _v0 = A2($elm$core$Maybe$map, $elm$core$String$uncons, url.fragment);
-	if (((_v0.$ === 'Just') && (_v0.a.$ === 'Just')) && ('/' === _v0.a.a.a.valueOf())) {
-		var _v1 = _v0.a.a;
-		var fakeFragment = _v1.b;
-		var _v2 = A2(
-			$elm$core$String$split,
-			'#',
-			$elm$url$Url$toString(url));
-		if (_v2.b) {
-			var afterFragment = _v2.b;
-			return A2(
-				$elm$core$Maybe$withDefault,
-				url,
-				$elm$url$Url$fromString(
-					$elm$core$String$concat(afterFragment)));
-		} else {
-			return url;
-		}
-	} else {
-		return url;
-	}
+	return {
+		fragment: $elm$core$Maybe$Nothing,
+		host: url.host,
+		path: A2($elm$core$Maybe$withDefault, '/', url.fragment),
+		port_: url.port_,
+		protocol: url.protocol,
+		query: url.query
+	};
 };
 var $elm$url$Url$Parser$Internal$Parser = function (a) {
 	return {$: 'Parser', a: a};
@@ -20255,6 +20198,50 @@ var $elm$url$Url$Parser$query = function (_v0) {
 		});
 };
 var $elm$browser$Browser$Navigation$replaceUrl = _Browser_replaceUrl;
+var $elm$url$Url$addPort = F2(
+	function (maybePort, starter) {
+		if (maybePort.$ === 'Nothing') {
+			return starter;
+		} else {
+			var port_ = maybePort.a;
+			return starter + (':' + $elm$core$String$fromInt(port_));
+		}
+	});
+var $elm$url$Url$addPrefixed = F3(
+	function (prefix, maybeSegment, starter) {
+		if (maybeSegment.$ === 'Nothing') {
+			return starter;
+		} else {
+			var segment = maybeSegment.a;
+			return _Utils_ap(
+				starter,
+				_Utils_ap(prefix, segment));
+		}
+	});
+var $elm$url$Url$toString = function (url) {
+	var http = function () {
+		var _v0 = url.protocol;
+		if (_v0.$ === 'Http') {
+			return 'http://';
+		} else {
+			return 'https://';
+		}
+	}();
+	return A3(
+		$elm$url$Url$addPrefixed,
+		'#',
+		url.fragment,
+		A3(
+			$elm$url$Url$addPrefixed,
+			'?',
+			url.query,
+			_Utils_ap(
+				A2(
+					$elm$url$Url$addPort,
+					url.port_,
+					_Utils_ap(http, url.host)),
+				url.path)));
+};
 var $author$project$External$Tasker$flash = _Platform_outgoingPort('flash', $elm$json$Json$Encode$string);
 var $author$project$External$Commands$toast = function (message) {
 	return $author$project$External$Tasker$flash(message);
