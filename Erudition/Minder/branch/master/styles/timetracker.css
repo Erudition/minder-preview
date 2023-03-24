@@ -1,0 +1,50 @@
+.activity-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-auto-flow: dense;
+    grid-template-columns: repeat(auto-fill, minmax( 100px, 1fr));
+    grid-gap: 3px;
+}
+
+.activity-list li {
+    padding: 1px 1px 1px 1px;
+    position: relative;
+    border: 1px solid black;
+    display: inline-block;
+    width: 1in;
+    color: white;
+    text-shadow: 2px 2px #000000;
+}
+
+.activity button {
+    width: 100%;
+    height: 100%;
+    border-radius: 5%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.activity-icon {
+    height: 2em;
+    width: 2em;
+}
+
+.activity-button.current {
+    background-color: lightblue;
+    animation-name: tracking;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+@keyframes tracking {
+  0% {
+    background-color: lightblue;
+  }
+  50% {
+    background-color: orange;
+  }
+  100 {
+    background-color: lightblue;
+  }
+}
