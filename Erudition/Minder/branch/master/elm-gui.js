@@ -20038,12 +20038,12 @@ var $author$project$Main$bypassFakeFragment = function (url) {
 			'#',
 			$elm$url$Url$toString(url));
 		if (_v2.b) {
-			var front = _v2.a;
+			var afterFragment = _v2.b;
 			return A2(
 				$elm$core$Maybe$withDefault,
 				url,
 				$elm$url$Url$fromString(
-					_Utils_ap(front, fakeFragment)));
+					$elm$core$String$concat(afterFragment)));
 		} else {
 			return url;
 		}
