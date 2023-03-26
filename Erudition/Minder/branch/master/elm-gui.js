@@ -21932,13 +21932,29 @@ var $author$project$Timeflow$Refresh = {$: 'Refresh'};
 var $author$project$Main$TimeflowMsg = function (a) {
 	return {$: 'TimeflowMsg', a: a};
 };
-var $author$project$Main$UnopenedPanel = {$: 'UnopenedPanel'};
-var $author$project$Main$emptyViewState = {devTools: $author$project$Main$UnopenedPanel, taskList: $author$project$Main$UnopenedPanel, timeTracker: $author$project$Main$UnopenedPanel, timeflow: $author$project$Main$UnopenedPanel};
 var $author$project$Main$FullScreen = {$: 'FullScreen'};
 var $author$project$Main$OpenPanel = F2(
 	function (a, b) {
 		return {$: 'OpenPanel', a: a, b: b};
 	});
+var $author$project$Main$UnopenedPanel = {$: 'UnopenedPanel'};
+var $author$project$TaskList$AllRelevantTasks = {$: 'AllRelevantTasks'};
+var $author$project$TaskList$Normal = F3(
+	function (a, b, c) {
+		return {$: 'Normal', a: a, b: b, c: c};
+	});
+var $author$project$TaskList$defaultView = A3(
+	$author$project$TaskList$Normal,
+	_List_fromArray(
+		[$author$project$TaskList$AllRelevantTasks]),
+	$elm$core$Maybe$Nothing,
+	'');
+var $author$project$Main$emptyViewState = {
+	devTools: $author$project$Main$UnopenedPanel,
+	taskList: A2($author$project$Main$OpenPanel, $author$project$Main$FullScreen, $author$project$TaskList$defaultView),
+	timeTracker: $author$project$Main$UnopenedPanel,
+	timeflow: $author$project$Main$UnopenedPanel
+};
 var $elm$url$Url$Parser$mapState = F2(
 	function (func, _v0) {
 		var visited = _v0.visited;
@@ -22004,11 +22020,6 @@ var $author$project$DevTools$routeView = A2(
 	$elm$url$Url$Parser$map,
 	$author$project$DevTools$ViewState(''),
 	$elm$url$Url$Parser$s('devtools'));
-var $author$project$TaskList$AllRelevantTasks = {$: 'AllRelevantTasks'};
-var $author$project$TaskList$Normal = F3(
-	function (a, b, c) {
-		return {$: 'Normal', a: a, b: b, c: c};
-	});
 var $author$project$TaskList$routeView = A2(
 	$elm$url$Url$Parser$map,
 	A3(
@@ -22962,12 +22973,6 @@ var $author$project$Main$ThirdPartyServerResponded = function (a) {
 var $author$project$Main$TodoistServer = function (a) {
 	return {$: 'TodoistServer', a: a};
 };
-var $author$project$TaskList$defaultView = A3(
-	$author$project$TaskList$Normal,
-	_List_fromArray(
-		[$author$project$TaskList$AllRelevantTasks]),
-	$elm$core$Maybe$Nothing,
-	'');
 var $author$project$TimeTracker$defaultView = $author$project$TimeTracker$Normal;
 var $author$project$Incubator$Todoist$Items = {$: 'Items'};
 var $author$project$Incubator$Todoist$Projects = {$: 'Projects'};
@@ -32312,6 +32317,7 @@ var $author$project$Main$update = F2(
 								[initCmdsIfNeeded, newCommand]))));
 		}
 	});
+var $author$project$TaskList$NoOp = {$: 'NoOp'};
 var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
 	return {$: 'AlignX', a: a};
 };
@@ -38009,6 +38015,24 @@ var $mdgriffith$elm_ui$Element$link = F2(
 				_List_fromArray(
 					[label])));
 	});
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $mdgriffith$elm_ui$Element$Events$onClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onClick);
 var $mdgriffith$elm_ui$Element$rgb = F3(
 	function (r, g, b) {
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
@@ -38375,7 +38399,6 @@ var $elm$html$Html$Events$alwaysStop = function (x) {
 var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
 	return {$: 'MayStopPropagation', a: a};
 };
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
 var $elm$html$Html$Events$stopPropagationOn = F2(
 	function (event, decoder) {
 		return A2(
@@ -39006,7 +39029,12 @@ var $author$project$Main$globalLayout = F4(
 		var projectsLink = A2(
 			$mdgriffith$elm_ui$Element$link,
 			_List_fromArray(
-				[$mdgriffith$elm_ui$Element$centerX, $mdgriffith$elm_ui$Element$centerY]),
+				[
+					$mdgriffith$elm_ui$Element$centerX,
+					$mdgriffith$elm_ui$Element$centerY,
+					$mdgriffith$elm_ui$Element$Events$onClick(
+					$author$project$Main$TaskListMsg($author$project$TaskList$NoOp))
+				]),
 			{
 				label: $mdgriffith$elm_ui$Element$text('Projects'),
 				url: '#/projects'
@@ -41218,23 +41246,6 @@ var $author$project$Replicated$Reducer$RepList$list = function (_v0) {
 	var repSetRecord = _v0.a;
 	return repSetRecord.members;
 };
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $mdgriffith$elm_ui$Element$Events$onClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onClick);
 var $author$project$Replicated$Reducer$RepList$remove = F2(
 	function (_v0, _v1) {
 		var itemToRemove = _v0.a;
@@ -42439,7 +42450,6 @@ var $rtfeldman$elm_css$Css$textAlign = function (fn) {
 		'text-align',
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
-var $author$project$TaskList$NoOp = {$: 'NoOp'};
 var $author$project$TaskList$UpdateTaskDate = F3(
 	function (a, b, c) {
 		return {$: 'UpdateTaskDate', a: a, b: b, c: c};
