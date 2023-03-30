@@ -38198,6 +38198,7 @@ var $author$project$SmartTime$Human$Duration$inLargestWholeUnits = function (dur
 		$elm$core$List$head(
 			$author$project$SmartTime$Human$Duration$breakdownNonzero(duration)));
 };
+var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
 var $author$project$Task$AssignedAction$getCompletionInt = function (instance) {
 	return $author$project$Replicated$Reducer$Register$latest(instance.instance).completion.get;
 };
@@ -38956,7 +38957,16 @@ var $author$project$Main$trackingDisplay = F4(
 							A2(
 								tracking_for_string,
 								$author$project$Activity$Activity$getName(currentActivity),
-								timeSinceSession)))
+								timeSinceSession))),
+						$mdgriffith$elm_ui$Element$html(
+						A3(
+							$elm$html$Html$node,
+							'ion-button',
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Stop')
+								])))
 					]));
 		} else {
 			var currentInstance = _v0.a;
@@ -39118,10 +39128,13 @@ var $author$project$Main$globalLayout = F4(
 								$mdgriffith$elm_ui$Element$text(
 									$author$project$SmartTime$Human$Moment$toStandardString(env.time))),
 								A2(
-								$mdgriffith$elm_ui$Element$el,
+								$mdgriffith$elm_ui$Element$link,
 								_List_fromArray(
 									[$mdgriffith$elm_ui$Element$centerX]),
-								$mdgriffith$elm_ui$Element$text('Minder - pre-alpha prototype')),
+								{
+									label: $mdgriffith$elm_ui$Element$text('Minder (prototype)'),
+									url: 'https://erudition.github.io/minder-preview/Erudition/Minder/branch/master/'
+								}),
 								A2(
 								$mdgriffith$elm_ui$Element$link,
 								_List_fromArray(
