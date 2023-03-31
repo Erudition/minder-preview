@@ -19972,6 +19972,13 @@ var $author$project$Profile$codec = $author$project$Replicated$Codec$finishRecor
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $author$project$Main$incomingFramesFromElsewhere = _Platform_incomingPort('incomingFramesFromElsewhere', $elm$json$Json$Decode$string);
 var $author$project$Main$HomePage = {$: 'HomePage'};
+var $mdgriffith$elm_ui$Element$Phone = {$: 'Phone'};
+var $author$project$Main$ResizeViewport = F2(
+	function (a, b) {
+		return {$: 'ResizeViewport', a: a, b: b};
+	});
+var $elm$browser$Browser$Events$Visible = {$: 'Visible'};
+var $elm$browser$Browser$Dom$getViewport = _Browser_withWindow(_Browser_getViewport);
 var $author$project$Main$ClearErrors = {$: 'ClearErrors'};
 var $author$project$Main$Marvin = {$: 'Marvin'};
 var $author$project$Main$TaskListMsg = function (a) {
@@ -21932,29 +21939,13 @@ var $author$project$Timeflow$Refresh = {$: 'Refresh'};
 var $author$project$Main$TimeflowMsg = function (a) {
 	return {$: 'TimeflowMsg', a: a};
 };
+var $author$project$Main$UnopenedPanel = {$: 'UnopenedPanel'};
+var $author$project$Main$emptyViewState = {devTools: $author$project$Main$UnopenedPanel, taskList: $author$project$Main$UnopenedPanel, timeTracker: $author$project$Main$UnopenedPanel, timeflow: $author$project$Main$UnopenedPanel};
 var $author$project$Main$FullScreen = {$: 'FullScreen'};
 var $author$project$Main$OpenPanel = F2(
 	function (a, b) {
 		return {$: 'OpenPanel', a: a, b: b};
 	});
-var $author$project$Main$UnopenedPanel = {$: 'UnopenedPanel'};
-var $author$project$TaskList$AllRelevantTasks = {$: 'AllRelevantTasks'};
-var $author$project$TaskList$Normal = F3(
-	function (a, b, c) {
-		return {$: 'Normal', a: a, b: b, c: c};
-	});
-var $author$project$TaskList$defaultView = A3(
-	$author$project$TaskList$Normal,
-	_List_fromArray(
-		[$author$project$TaskList$AllRelevantTasks]),
-	$elm$core$Maybe$Nothing,
-	'');
-var $author$project$Main$emptyViewState = {
-	devTools: $author$project$Main$UnopenedPanel,
-	taskList: A2($author$project$Main$OpenPanel, $author$project$Main$FullScreen, $author$project$TaskList$defaultView),
-	timeTracker: $author$project$Main$UnopenedPanel,
-	timeflow: $author$project$Main$UnopenedPanel
-};
 var $elm$url$Url$Parser$mapState = F2(
 	function (func, _v0) {
 		var visited = _v0.visited;
@@ -22020,6 +22011,11 @@ var $author$project$DevTools$routeView = A2(
 	$elm$url$Url$Parser$map,
 	$author$project$DevTools$ViewState(''),
 	$elm$url$Url$Parser$s('devtools'));
+var $author$project$TaskList$AllRelevantTasks = {$: 'AllRelevantTasks'};
+var $author$project$TaskList$Normal = F3(
+	function (a, b, c) {
+		return {$: 'Normal', a: a, b: b, c: c};
+	});
 var $author$project$TaskList$routeView = A2(
 	$elm$url$Url$Parser$map,
 	A3(
@@ -22455,20 +22451,28 @@ var $author$project$NativeScript$Notification$test = function (title) {
 			title: $elm$core$Maybe$Just(title)
 		});
 };
+var $elm$core$Basics$truncate = _Basics_truncate;
 var $author$project$Main$init = F3(
 	function (url, maybeKey, replica) {
+		var setViewport = function (newViewport) {
+			return A2($author$project$Main$ResizeViewport, newViewport.viewport.width | 0, newViewport.viewport.height | 0);
+		};
 		var initNotif = $author$project$NativeScript$Commands$notify(
 			_List_fromArray(
 				[
 					$author$project$NativeScript$Notification$test('We have taken over Android, woo!')
 				]));
+		var getViewport = A2($elm$core$Task$perform, setViewport, $elm$browser$Browser$Dom$getViewport);
 		var _v0 = $author$project$Main$navigate(url);
 		var state = _v0.a;
 		var panelOpenCmds = _v0.b;
 		var initialTemp = {
 			environment: $author$project$Environment$preInit(maybeKey),
 			rootFrame: $hariroshan$elm_native$Native$Frame$init($author$project$Main$HomePage),
-			viewState: state
+			viewState: state,
+			viewportSize: {height: 0, width: 0},
+			viewportSizeClass: $mdgriffith$elm_ui$Element$Phone,
+			windowVisibility: $elm$browser$Browser$Events$Visible
 		};
 		var cmdsFromUrl = A3($author$project$Main$handleUrlTriggers, url, replica, initialTemp);
 		return _Utils_Tuple3(
@@ -22476,7 +22480,7 @@ var $author$project$Main$init = F3(
 			initialTemp,
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
-					[cmdsFromUrl, panelOpenCmds, initNotif])));
+					[cmdsFromUrl, panelOpenCmds, initNotif, getViewport])));
 	});
 var $author$project$Main$initGraphical = F3(
 	function (url, key, flags) {
@@ -22492,6 +22496,9 @@ var $author$project$Main$MouseMoved = F2(
 		return {$: 'MouseMoved', a: a, b: b};
 	});
 var $author$project$Main$NoOp = {$: 'NoOp'};
+var $author$project$Main$VisibilityChanged = function (a) {
+	return {$: 'VisibilityChanged', a: a};
+};
 var $author$project$Main$decodeButtons = A2(
 	$elm$json$Json$Decode$field,
 	'buttons',
@@ -22859,8 +22866,22 @@ var $elm$browser$Browser$Events$on = F3(
 			A3($elm$browser$Browser$Events$MySub, node, name, decoder));
 	});
 var $elm$browser$Browser$Events$onMouseMove = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'mousemove');
+var $elm$browser$Browser$Events$Window = {$: 'Window'};
+var $elm$browser$Browser$Events$onResize = function (func) {
+	return A3(
+		$elm$browser$Browser$Events$on,
+		$elm$browser$Browser$Events$Window,
+		'resize',
+		A2(
+			$elm$json$Json$Decode$field,
+			'target',
+			A3(
+				$elm$json$Json$Decode$map2,
+				func,
+				A2($elm$json$Json$Decode$field, 'innerWidth', $elm$json$Json$Decode$int),
+				A2($elm$json$Json$Decode$field, 'innerHeight', $elm$json$Json$Decode$int))));
+};
 var $elm$browser$Browser$Events$Hidden = {$: 'Hidden'};
-var $elm$browser$Browser$Events$Visible = {$: 'Visible'};
 var $elm$browser$Browser$Events$withHidden = F2(
 	function (func, isHidden) {
 		return func(
@@ -22887,21 +22908,6 @@ var $author$project$Timeflow$WidgetMsg = F2(
 var $MacCASOutreach$graphicsvg$GraphicSVG$Widget$WidgetResize = function (a) {
 	return {$: 'WidgetResize', a: a};
 };
-var $elm$browser$Browser$Events$Window = {$: 'Window'};
-var $elm$browser$Browser$Events$onResize = function (func) {
-	return A3(
-		$elm$browser$Browser$Events$on,
-		$elm$browser$Browser$Events$Window,
-		'resize',
-		A2(
-			$elm$json$Json$Decode$field,
-			'target',
-			A3(
-				$elm$json$Json$Decode$map2,
-				func,
-				A2($elm$json$Json$Decode$field, 'innerWidth', $elm$json$Json$Decode$int),
-				A2($elm$json$Json$Decode$field, 'innerHeight', $elm$json$Json$Decode$int))));
-};
 var $MacCASOutreach$graphicsvg$GraphicSVG$Widget$subscriptions = $elm$browser$Browser$Events$onResize(
 	F2(
 		function (_v0, _v1) {
@@ -22927,23 +22933,25 @@ var $author$project$Main$subscriptions = function (_v0) {
 		_Utils_ap(
 			_List_fromArray(
 				[
-					$elm$browser$Browser$Events$onVisibilityChange(
-					function (_v1) {
-						return $author$project$Main$NoOp;
-					}),
+					$elm$browser$Browser$Events$onVisibilityChange($author$project$Main$VisibilityChanged),
+					$elm$browser$Browser$Events$onResize(
+					F2(
+						function (width, height) {
+							return A2($author$project$Main$ResizeViewport, width, height);
+						})),
 					$elm$browser$Browser$Events$onMouseMove(
 					A3($elm$json$Json$Decode$map2, $author$project$Main$MouseMoved, $author$project$Main$decodeButtons, $author$project$Main$decodeFraction)),
 					A2(
 					$author$project$SmartTime$Moment$every,
 					$author$project$SmartTime$Duration$fromSeconds(1 / 5),
-					function (_v2) {
+					function (_v1) {
 						return $author$project$Main$NoOp;
 					})
 				]),
 			function () {
-				var _v3 = temp.viewState.timeflow;
-				if ((_v3.$ === 'OpenPanel') && (_v3.b.$ === 'Just')) {
-					var subState = _v3.b.a;
+				var _v2 = temp.viewState.timeflow;
+				if ((_v2.$ === 'OpenPanel') && (_v2.b.$ === 'Just')) {
+					var subState = _v2.b.a;
 					return _List_fromArray(
 						[
 							A2(
@@ -22973,6 +22981,31 @@ var $author$project$Main$ThirdPartyServerResponded = function (a) {
 var $author$project$Main$TodoistServer = function (a) {
 	return {$: 'TodoistServer', a: a};
 };
+var $mdgriffith$elm_ui$Element$BigDesktop = {$: 'BigDesktop'};
+var $mdgriffith$elm_ui$Element$Desktop = {$: 'Desktop'};
+var $mdgriffith$elm_ui$Element$Landscape = {$: 'Landscape'};
+var $mdgriffith$elm_ui$Element$Portrait = {$: 'Portrait'};
+var $mdgriffith$elm_ui$Element$Tablet = {$: 'Tablet'};
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
+var $mdgriffith$elm_ui$Element$classifyDevice = function (window) {
+	return {
+		_class: function () {
+			var shortSide = A2($elm$core$Basics$min, window.width, window.height);
+			var longSide = A2($elm$core$Basics$max, window.width, window.height);
+			return (shortSide < 600) ? $mdgriffith$elm_ui$Element$Phone : ((longSide <= 1200) ? $mdgriffith$elm_ui$Element$Tablet : (((longSide > 1200) && (longSide <= 1920)) ? $mdgriffith$elm_ui$Element$Desktop : $mdgriffith$elm_ui$Element$BigDesktop));
+		}(),
+		orientation: (_Utils_cmp(window.width, window.height) < 0) ? $mdgriffith$elm_ui$Element$Portrait : $mdgriffith$elm_ui$Element$Landscape
+	};
+};
+var $author$project$TaskList$defaultView = A3(
+	$author$project$TaskList$Normal,
+	_List_fromArray(
+		[$author$project$TaskList$AllRelevantTasks]),
+	$elm$core$Maybe$Nothing,
+	'');
 var $author$project$TimeTracker$defaultView = $author$project$TimeTracker$Normal;
 var $author$project$Incubator$Todoist$Items = {$: 'Items'};
 var $author$project$Incubator$Todoist$Projects = {$: 'Projects'};
@@ -31961,6 +31994,27 @@ var $author$project$Main$update = F2(
 			return _Utils_Tuple3(_List_Nil, newTemp, command);
 		};
 		switch (msg.$) {
+			case 'ResizeViewport':
+				var newWidth = msg.a;
+				var newHeight = msg.b;
+				return _Utils_Tuple3(
+					_List_Nil,
+					_Utils_update(
+						newTemp,
+						{
+							viewportSize: {height: newHeight, width: newWidth},
+							viewportSizeClass: $mdgriffith$elm_ui$Element$classifyDevice(
+								{height: newHeight, width: newWidth})._class
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'VisibilityChanged':
+				var newVisibility = msg.a;
+				return _Utils_Tuple3(
+					_List_Nil,
+					_Utils_update(
+						newTemp,
+						{windowVisibility: newVisibility}),
+					$elm$core$Platform$Cmd$none);
 			case 'MouseMoved':
 				return _Utils_Tuple3(_List_Nil, newTemp, $elm$core$Platform$Cmd$none);
 			case 'NoOp':
@@ -32138,6 +32192,16 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[panelOpenCmds, effectsAfter])));
+			case 'InternalLink':
+				var path = msg.a;
+				var _v9 = environment.navkey;
+				if (_v9.$ === 'Just') {
+					var navkey = _v9.a;
+					return justRunCommand(
+						A2($elm$browser$Browser$Navigation$pushUrl, navkey, path));
+				} else {
+					return noOp;
+				}
 			case 'SyncNSFrame':
 				var bool = msg.a;
 				return _Utils_Tuple3(
@@ -32155,19 +32219,19 @@ var $author$project$Main$update = F2(
 					return justRunCommand(
 						A2(
 							$elm$core$Task$perform,
-							function (_v10) {
+							function (_v11) {
 								return $author$project$Main$ThirdPartyServerResponded(
 									$author$project$Main$MarvinServer(subSubMsg));
 							},
 							$elm$core$Task$succeed(_Utils_Tuple0)));
 				} else {
-					var _v11 = A2($author$project$Main$getPanelViewState, viewState.taskList, $author$project$TaskList$defaultView);
-					var oldPanelState = _v11.a;
-					var position = _v11.b;
-					var _v12 = A4($author$project$TaskList$update, subMsg, oldPanelState, replica, environment);
-					var newPanelState = _v12.a;
-					var newFrame = _v12.b;
-					var newCommand = _v12.c;
+					var _v12 = A2($author$project$Main$getPanelViewState, viewState.taskList, $author$project$TaskList$defaultView);
+					var oldPanelState = _v12.a;
+					var position = _v12.b;
+					var _v13 = A4($author$project$TaskList$update, subMsg, oldPanelState, replica, environment);
+					var newPanelState = _v13.a;
+					var newFrame = _v13.b;
+					var newCommand = _v13.c;
 					var newViewState = _Utils_update(
 						viewState,
 						{
@@ -32183,18 +32247,18 @@ var $author$project$Main$update = F2(
 				}
 			case 'TimeTrackerMsg':
 				var subMsg = msg.a;
-				var _v13 = A2($author$project$Main$getPanelViewState, viewState.timeTracker, $author$project$TimeTracker$defaultView);
-				var oldPanelState = _v13.a;
-				var position = _v13.b;
-				var _v14 = A4(
+				var _v14 = A2($author$project$Main$getPanelViewState, viewState.timeTracker, $author$project$TimeTracker$defaultView);
+				var oldPanelState = _v14.a;
+				var position = _v14.b;
+				var _v15 = A4(
 					$author$project$TimeTracker$update,
 					subMsg,
 					oldPanelState,
 					replica,
 					_Utils_Tuple2(environment.time, environment.timeZone));
-				var newFrame = _v14.a;
-				var newPanelState = _v14.b;
-				var newCommand = _v14.c;
+				var newFrame = _v15.a;
+				var newPanelState = _v15.b;
+				var newCommand = _v15.c;
 				var newViewState = _Utils_update(
 					viewState,
 					{
@@ -32209,48 +32273,48 @@ var $author$project$Main$update = F2(
 					A2($elm$core$Platform$Cmd$map, $author$project$Main$TimeTrackerMsg, newCommand));
 			case 'TimeflowMsg':
 				var subMsg = msg.a;
-				var _v15 = function () {
-					var _v16 = viewState.timeflow;
-					_v16$2:
+				var _v16 = function () {
+					var _v17 = viewState.timeflow;
+					_v17$2:
 					while (true) {
-						switch (_v16.$) {
+						switch (_v17.$) {
 							case 'OpenPanel':
-								if (_v16.b.$ === 'Just') {
-									var oldPosition = _v16.a;
-									var oldState = _v16.b.a;
+								if (_v17.b.$ === 'Just') {
+									var oldPosition = _v17.a;
+									var oldState = _v17.b.a;
 									return _Utils_Tuple3(oldState, oldPosition, $elm$core$Platform$Cmd$none);
 								} else {
-									break _v16$2;
+									break _v17$2;
 								}
 							case 'ClosedPanel':
-								if (_v16.b.$ === 'Just') {
-									var oldPosition = _v16.a;
-									var oldState = _v16.b.a;
+								if (_v17.b.$ === 'Just') {
+									var oldPosition = _v17.a;
+									var oldState = _v17.b.a;
 									return _Utils_Tuple3(oldState, oldPosition, $elm$core$Platform$Cmd$none);
 								} else {
-									break _v16$2;
+									break _v17$2;
 								}
 							default:
-								break _v16$2;
+								break _v17$2;
 						}
 					}
-					var _v17 = A2($author$project$Timeflow$init, replica, environment);
-					var freshState = _v17.a;
-					var initCmds = _v17.b;
+					var _v18 = A2($author$project$Timeflow$init, replica, environment);
+					var freshState = _v18.a;
+					var initCmds = _v18.b;
 					return _Utils_Tuple3(freshState, $author$project$Main$FullScreen, initCmds);
 				}();
-				var panelState = _v15.a;
-				var position = _v15.b;
-				var initCmdIfNeeded = _v15.c;
-				var _v18 = A4(
+				var panelState = _v16.a;
+				var position = _v16.b;
+				var initCmdIfNeeded = _v16.c;
+				var _v19 = A4(
 					$author$project$Timeflow$update,
 					subMsg,
 					$elm$core$Maybe$Just(panelState),
 					replica,
 					environment);
-				var newFrame = _v18.a;
-				var newPanelState = _v18.b;
-				var newCommand = _v18.c;
+				var newFrame = _v19.a;
+				var newPanelState = _v19.b;
+				var newCommand = _v19.c;
 				var newViewState = _Utils_update(
 					viewState,
 					{
@@ -32273,31 +32337,31 @@ var $author$project$Main$update = F2(
 								[initCmdIfNeeded, newCommand]))));
 			default:
 				var subMsg = msg.a;
-				var _v19 = function () {
-					var _v20 = viewState.devTools;
-					switch (_v20.$) {
+				var _v20 = function () {
+					var _v21 = viewState.devTools;
+					switch (_v21.$) {
 						case 'OpenPanel':
-							var oldPosition = _v20.a;
-							var oldState = _v20.b;
+							var oldPosition = _v21.a;
+							var oldState = _v21.b;
 							return _Utils_Tuple3(oldState, oldPosition, $elm$core$Platform$Cmd$none);
 						case 'ClosedPanel':
-							var oldPosition = _v20.a;
-							var oldState = _v20.b;
+							var oldPosition = _v21.a;
+							var oldState = _v21.b;
 							return _Utils_Tuple3(oldState, oldPosition, $elm$core$Platform$Cmd$none);
 						default:
-							var _v21 = A3($author$project$DevTools$init, replica, environment, 'not wired yet');
-							var freshState = _v21.a;
-							var initCmds = _v21.b;
+							var _v22 = A3($author$project$DevTools$init, replica, environment, 'not wired yet');
+							var freshState = _v22.a;
+							var initCmds = _v22.b;
 							return _Utils_Tuple3(freshState, $author$project$Main$FullScreen, initCmds);
 					}
 				}();
-				var panelState = _v19.a;
-				var position = _v19.b;
-				var initCmdsIfNeeded = _v19.c;
-				var _v22 = A4($author$project$DevTools$update, subMsg, panelState, replica, environment);
-				var newPanelState = _v22.a;
-				var newFrame = _v22.b;
-				var newCommand = _v22.c;
+				var panelState = _v20.a;
+				var position = _v20.b;
+				var initCmdsIfNeeded = _v20.c;
+				var _v23 = A4($author$project$DevTools$update, subMsg, panelState, replica, environment);
+				var newPanelState = _v23.a;
+				var newFrame = _v23.b;
+				var newCommand = _v23.c;
 				var newViewState = _Utils_update(
 					viewState,
 					{
@@ -32317,6 +32381,14 @@ var $author$project$Main$update = F2(
 								[initCmdsIfNeeded, newCommand]))));
 		}
 	});
+var $elm$virtual_dom$VirtualDom$node = function (tag) {
+	return _VirtualDom_node(
+		_VirtualDom_noScript(tag));
+};
+var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
+var $author$project$Ion$App$app = function (children) {
+	return A3($elm$html$Html$node, 'ion-app', _List_Nil, children);
+};
 var $author$project$TaskList$NoOp = {$: 'NoOp'};
 var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
 	return {$: 'AlignX', a: a};
@@ -32325,6 +32397,10 @@ var $mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var $mdgriffith$elm_ui$Element$alignLeft = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Left);
 var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
+var $author$project$Ion$Tab$bar = F2(
+	function (attributes, children) {
+		return A3($elm$html$Html$node, 'ion-tab-bar', attributes, children);
+	});
 var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
 var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
 var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
@@ -32791,10 +32867,6 @@ var $mdgriffith$elm_ui$Internal$Model$renderFocusStyle = function (focus) {
 						A2($mdgriffith$elm_ui$Internal$Model$Property, 'outline', 'none'))
 					])))
 		]);
-};
-var $elm$virtual_dom$VirtualDom$node = function (tag) {
-	return _VirtualDom_node(
-		_VirtualDom_noScript(tag));
 };
 var $elm$virtual_dom$VirtualDom$property = F2(
 	function (key, value) {
@@ -34895,10 +34967,6 @@ var $mdgriffith$elm_ui$Internal$Model$hasSmallCaps = function (typeface) {
 		return false;
 	}
 };
-var $elm$core$Basics$min = F2(
-	function (x, y) {
-		return (_Utils_cmp(x, y) < 0) ? x : y;
-	});
 var $mdgriffith$elm_ui$Internal$Model$renderProps = F3(
 	function (force, _v0, existing) {
 		var key = _v0.a;
@@ -37694,6 +37762,14 @@ var $mdgriffith$elm_ui$Element$column = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
 var $mdgriffith$elm_ui$Element$el = F2(
 	function (attrs, child) {
 		return A4(
@@ -37716,10 +37792,46 @@ var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 };
 var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
 var $mdgriffith$elm_ui$Element$fillPortion = $mdgriffith$elm_ui$Internal$Model$Fill;
+var $elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
 var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
 var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
 var $mdgriffith$elm_ui$Element$htmlAttribute = $mdgriffith$elm_ui$Internal$Model$Attr;
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $elm$html$Html$Attributes$name = $elm$html$Html$Attributes$stringProperty('name');
+var $author$project$Ion$Icon$basic = function (iconName) {
+	return A3(
+		$elm$html$Html$node,
+		'ion-icon',
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$name(iconName)
+			]),
+		_List_Nil);
+};
+var $author$project$Ion$Tab$labeledIconButton = F3(
+	function (attributes, label, iconName) {
+		return A3(
+			$elm$html$Html$node,
+			'ion-tab-button',
+			attributes,
+			_List_fromArray(
+				[
+					$author$project$Ion$Icon$basic(iconName),
+					A3(
+					$elm$html$Html$node,
+					'ion-label',
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(label)
+						]))
+				]));
+	});
 var $mdgriffith$elm_ui$Internal$Model$OnlyDynamic = F2(
 	function (a, b) {
 		return {$: 'OnlyDynamic', a: a, b: b};
@@ -37978,12 +38090,6 @@ var $mdgriffith$elm_ui$Element$layoutWith = F3(
 				_Utils_ap($mdgriffith$elm_ui$Internal$Model$rootStyle, attrs)),
 			child);
 	});
-var $elm$html$Html$Attributes$href = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
-};
 var $elm$html$Html$Attributes$rel = _VirtualDom_attribute('rel');
 var $mdgriffith$elm_ui$Element$link = F2(
 	function (attrs, _v0) {
@@ -38058,6 +38164,7 @@ var $mdgriffith$elm_ui$Element$row = F2(
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
 var $mdgriffith$elm_ui$Element$scrollbarY = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.scrollbarsY);
+var $elm$html$Html$Attributes$selected = $elm$html$Html$Attributes$boolProperty('selected');
 var $mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
 	function (a, b, c, d, e) {
 		return {$: 'PaddingStyle', a: a, b: b, c: c, d: d, e: e};
@@ -38198,7 +38305,16 @@ var $author$project$SmartTime$Human$Duration$inLargestWholeUnits = function (dur
 		$elm$core$List$head(
 			$author$project$SmartTime$Human$Duration$breakdownNonzero(duration)));
 };
-var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
+var $author$project$Ion$Button$justIcon = function (iconName) {
+	return A3(
+		$elm$html$Html$node,
+		'ion-button',
+		_List_Nil,
+		_List_fromArray(
+			[
+				$author$project$Ion$Icon$basic(iconName)
+			]));
+};
 var $author$project$Task$AssignedAction$getCompletionInt = function (instance) {
 	return $author$project$Replicated$Reducer$Register$latest(instance.instance).completion.get;
 };
@@ -38959,14 +39075,7 @@ var $author$project$Main$trackingDisplay = F4(
 								$author$project$Activity$Activity$getName(currentActivity),
 								timeSinceSession))),
 						$mdgriffith$elm_ui$Element$html(
-						A3(
-							$elm$html$Html$node,
-							'ion-button',
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text('Stop')
-								])))
+						$author$project$Ion$Button$justIcon('stop-circle-outline'))
 					]));
 		} else {
 			var currentInstance = _v0.a;
@@ -39164,15 +39273,77 @@ var $author$project$Main$globalLayout = F4(
 						$mdgriffith$elm_ui$Element$row,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-								$mdgriffith$elm_ui$Element$spacing(30),
-								$mdgriffith$elm_ui$Element$height(
-								$mdgriffith$elm_ui$Element$fillPortion(1)),
-								$mdgriffith$elm_ui$Element$Background$color(
-								A3($mdgriffith$elm_ui$Element$rgb, 0.5, 0.5, 0.5))
+								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 							]),
 						_List_fromArray(
-							[footerLinks])),
+							[
+								$mdgriffith$elm_ui$Element$html(
+								A2(
+									$author$project$Ion$Tab$bar,
+									_List_fromArray(
+										[
+											A2($elm$html$Html$Attributes$style, 'width', '100%')
+										]),
+									_List_fromArray(
+										[
+											A3(
+											$author$project$Ion$Tab$labeledIconButton,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$disabled(true)
+												]),
+											'Home',
+											'albums-outline'),
+											A3(
+											$author$project$Ion$Tab$labeledIconButton,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$disabled(true)
+												]),
+											'Cares',
+											'heart-circle-outline'),
+											A3(
+											$author$project$Ion$Tab$labeledIconButton,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$href('#/projects'),
+													$elm$html$Html$Attributes$selected(
+													isPanelOpen(viewState.taskList))
+												]),
+											'Projects',
+											'list-outline'),
+											A3(
+											$author$project$Ion$Tab$labeledIconButton,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$href('#/timeflow'),
+													$elm$html$Html$Attributes$selected(
+													isPanelOpen(viewState.timeflow))
+												]),
+											'Timeflow',
+											'hourglass-outline'),
+											A3(
+											$author$project$Ion$Tab$labeledIconButton,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$href('#/timetracker'),
+													$elm$html$Html$Attributes$selected(
+													isPanelOpen(viewState.timeTracker))
+												]),
+											'Activities',
+											'stopwatch-outline'),
+											A3(
+											$author$project$Ion$Tab$labeledIconButton,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$href('#/devtools'),
+													$elm$html$Html$Attributes$selected(
+													isPanelOpen(viewState.devTools))
+												]),
+											'Dev',
+											'code-working-outline')
+										])))
+							])),
 						A4($author$project$Main$trackingDisplay, replica, env.time, env.launchTime, env.timeZone)
 					])));
 	});
@@ -45903,13 +46074,6 @@ var $MacCASOutreach$graphicsvg$GraphicSVG$Widget$convertViewOption = function (v
 };
 var $elm$svg$Svg$a = $elm$svg$Svg$trustedNode('a');
 var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
-var $elm$html$Html$Attributes$boolProperty = F2(
-	function (key, bool) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$bool(bool));
-	});
 var $elm$html$Html$Attributes$contenteditable = $elm$html$Html$Attributes$boolProperty('contentEditable');
 var $MacCASOutreach$graphicsvg$GraphicSVG$pairToString = function (_v0) {
 	var x = _v0.a;
@@ -47673,7 +47837,11 @@ var $author$project$Main$view = function (_v0) {
 	return {
 		body: _List_fromArray(
 			[
-				A4($author$project$Main$globalLayout, temp.viewState, replica, temp.environment, withinPage)
+				$author$project$Ion$App$app(
+				_List_fromArray(
+					[
+						A4($author$project$Main$globalLayout, temp.viewState, replica, temp.environment, withinPage)
+					]))
 			]),
 		title: finalTitle
 	};
